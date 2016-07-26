@@ -1,7 +1,5 @@
 require_relative './match_loader.rb'
 
-# MatchLoader.parse_data
-
 # dot product of theta vector and x vector
 def theta_t_x(theta, x_vec)
   sum = theta.first
@@ -30,10 +28,10 @@ def cost_function(theta, x, y, lambda_factor)
     temp += (1 - y[i])*Math.log(1 - sigmoid(theta, x[i]))
     accum += temp
   end
-
-  if (sum.abs > 1000)
-    debugger
-  end
+  #
+  # if (sum.abs > 1000)
+  #   debugger
+  # end
   theta_sum - (sum/m)
 end
 
@@ -58,7 +56,7 @@ end
 # Gradient Descent for Logistic Regression
 def gradient_descent(x, y)
   # Specify learning rate, and lambda factor
-  a, l = 0.05, 0.001
+  a, l = 0.01, 0.001
   # Initialize theta
   thetas = [0, 0, 0, 0]
   n = thetas.length # number of features
@@ -75,21 +73,42 @@ def gradient_descent(x, y)
     end
     cost = cost_function(thetas, x, y, l)
     puts "Cost function: #{cost}, convergence: #{convergence}"
-    puts dj_thetas.to_s
+    puts "Vector norm of gradient vector: #{vector_norm(dj_thetas)}"
     break if is_converging(dj_thetas)
   end
   thetas
 end
 
-def is_converging(dj_thetas)
-  sum = dj_thetas.inject(0) do |accum, dj_theta|
-    accum += dj_theta*dj_theta
+def vector_norm(vector)
+  vector.inject(0) do |accum, el|
+    accum += el*el
   end
-  sum <= 0.0000001
 end
 
-# Happiness, Availability, Makeup Frequency
-x = [[8.0, 9.0, 1.0],[7.0, 2.0, 3.0],[9.0, 7.0, 5.0], [8.5, 1.0, 3.0]]
-y = [0, 1, 0, 1]
+def is_converging(dj_thetas)
+  vector_norm(dj_thetas) <= 0.0000001
+end
+
+match_data = MatchLoader.parse_data
+x, y = [], []
+match_data.take(180).each do |data_point|
+  # x = [gold_earned, team_kda, team_cs_rate]
+  x << data_point[:x]
+  y << data_point[:y]
+end
 params = gradient_descent(x, y)
-p sigmoid(params, [7.5, 1.0, 4.0])
+puts "Gradient descent has been completed=============================="
+match_data.drop(180).each do |data_point|
+  val = sigmoid(params, data_point[:x])
+  if  val > 0.50
+    prediction = 1
+  else
+    prediction = 0
+  end
+
+  if prediction == data_point[:y]
+    puts "PASSED"
+  else
+    puts "FAILED"
+  end
+end
