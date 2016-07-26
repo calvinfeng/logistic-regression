@@ -1,4 +1,4 @@
-require_relative './match_loader.rb'
+require_relative './match-loader.rb'
 
 # dot product of theta vector and x vector
 def theta_t_x(theta, x_vec)
