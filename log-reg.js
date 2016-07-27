@@ -160,18 +160,40 @@ function gradientDescent(x, y) {
 let data = getXYVectors();
 let trainingX = data[0].slice(0, 180), testX = data[0].slice(180,200);
 let trainingY = data[1].slice(0, 180), testY = data[1].slice(180,200);
-let params = gradientDescent(trainingX, trainingY);
 
-for (let i = 0; i < testY.length; i++) {
-  let val = sigmoid(params, testX[i]), prediction;
-  if (val > 0.50) {
-    prediction = 1;
-  } else {
-    prediction = 0;
-  }
-  if (prediction === testY[i]) {
-    console.log(`Probability: ${Math.round(val*10000)/100}%, Result: PASSED`);
-  } else {
-    console.log(`Probability: ${Math.round(val*10000)/100}%, Result: FAILED`);
-  }
+// let params = gradientDescent(trainingX, trainingY);
+//
+// for (let i = 0; i < testY.length; i++) {
+//   let val = sigmoid(params, testX[i]), prediction;
+//   if (val > 0.50) {
+//     prediction = 1;
+//   } else {
+//     prediction = 0;
+//   }
+//   if (prediction === testY[i]) {
+//     console.log(`Probability: ${Math.round(val*10000)/100}%, Result: PASSED`);
+//   } else {
+//     console.log(`Probability: ${Math.round(val*10000)/100}%, Result: FAILED`);
+//   }
+// }
+
+// Writing data to file
+const jsonfile = require('jsonfile');
+let file = './parsed-data.json';
+let obj = {
+  x1: [],
+  x2: [],
+  x3: [],
+  y: []
+};
+
+for (let i = 0; i < trainingX.length; i++) {
+  obj.x1.push(trainingX[i][0]);
+  obj.x2.push(trainingX[i][1]);
+  obj.x3.push(trainingX[i][2]);
+  obj.y.push(trainingY[i]);
 }
+
+jsonfile.writeFile(file, obj, function (err) {
+  console.error(err);
+});
