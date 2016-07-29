@@ -4,7 +4,6 @@
 */
 const matchData = require('./matches.json');
 const matches = matchData.matches;
-
 function getTeamGoldEarned(teamMembers) {
   let totalGold = 0;
   for (let i = 0; i < teamMembers.length; i++) {
@@ -161,8 +160,15 @@ let data = getXYVectors();
 let trainingX = data[0].slice(0, 180), testX = data[0].slice(180,200);
 let trainingY = data[1].slice(0, 180), testY = data[1].slice(180,200);
 
-// let params = gradientDescent(trainingX, trainingY);
-//
+let params = gradientDescent(trainingX, trainingY);
+
+console.log(params);
+
+// for (let i = 0; i < testY.length; i++) {
+//   let prob = sigmoid(params, testX[i]);
+//   console.log(`${i}: ${testX[i]}, Prob: ${Math.round(prob*10000)/100}, y: ${testY[i]}`);
+// }
+
 // for (let i = 0; i < testY.length; i++) {
 //   let val = sigmoid(params, testX[i]), prediction;
 //   if (val > 0.50) {
@@ -178,22 +184,33 @@ let trainingY = data[1].slice(0, 180), testY = data[1].slice(180,200);
 // }
 
 // Writing data to file
-const jsonfile = require('jsonfile');
-let file = './parsed-data.json';
-let obj = {
-  x1: [],
-  x2: [],
-  x3: [],
-  y: []
-};
-
-for (let i = 0; i < trainingX.length; i++) {
-  obj.x1.push(trainingX[i][0]);
-  obj.x2.push(trainingX[i][1]);
-  obj.x3.push(trainingX[i][2]);
-  obj.y.push(trainingY[i]);
-}
-
-jsonfile.writeFile(file, obj, function (err) {
-  console.error(err);
-});
+// const jsonfile = require('jsonfile');
+// let file = './parsed-data.json';
+// let obj = {
+//   win: {
+//     x1: [],
+//     x2: [],
+//     x3: []
+//   },
+//   loss: {
+//     x1: [],
+//     x2: [],
+//     x3: []
+//   }
+// };
+//
+// for (let i = 0; i < trainingX.length; i++) {
+//   if (trainingY[i] === 1) {
+//     obj.win.x1.push(Math.round(trainingX[i][0]*1000)/1000);
+//     obj.win.x2.push(Math.round(trainingX[i][1]*1000)/1000);
+//     obj.win.x3.push(Math.round(trainingX[i][2]*1000)/1000);
+//   } else {
+//     obj.loss.x1.push(Math.round(trainingX[i][0]*1000)/1000);
+//     obj.loss.x2.push(Math.round(trainingX[i][1]*1000)/1000);
+//     obj.loss.x3.push(Math.round(trainingX[i][2]*1000)/1000);
+//   }
+// }
+//
+// jsonfile.writeFile(file, obj, function (err) {
+//   console.error(err);
+// });
