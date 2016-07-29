@@ -6,6 +6,7 @@ This is a lazy write-up because the details are on my github page.
 
 ## Hypothesis
 The following is a sigmoid function
+
 ![sigmoid]
 [sigmoid]: ./img/sigmoid.png
 Sigmoid function is a S-shaped function with a range from 0 to 1 as output. This is the basis for
@@ -60,10 +61,12 @@ function costFunction(theta, x, y, lambda) {
 ```
 ## Gradient Descent
 We will repeat the following code until convergence.
+
 ![theta-0]
 [theta-0]: ./img/theta-0.png
 ![theta-j]
 [theta-j]: ./img/theta-j.png
+
 ``` javascript
 function gradientDescent(x, y) {
   // a: learning rate, lambda: regularization
