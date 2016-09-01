@@ -1,6 +1,8 @@
 import match_loader as matches
 import pdb
 from numpy import dot
+from numpy import array
+from numpy import meshgrid
 from numpy.linalg import norm
 from math import exp
 from math import log
@@ -62,35 +64,64 @@ def gradient_descent(x, y):
             break
     return theta
 
+def find_min_max(x, n):
+    # n represents the number of features, do not scale x0
+    feature_min_max = []
+    for i in range(0, n + 1):
+        if i == 0:
+            feature_min_max.append({'min': 0, 'max': 1})
+        else:
+            feature_min_max.append({'min': None, 'max': None})
+    for x_vector in x:
+        for i in range(1, n + 1):
+            if feature_min_max[i]['max'] == None or feature_min_max[i]['max'] < x_vector[i]:
+                feature_min_max[i]['max'] = x_vector[i]
+            if feature_min_max[i]['min'] == None or feature_min_max[i]['min'] > x_vector[i]:
+                feature_min_max[i]['min'] = x_vector[i]
+    return feature_min_max
+
+def feature_scale(feature_min_max, x):
+    scaled_x = []
+    for x_vector in x:
+        scaled_x_vector = []
+        for i in range(0, len(x_vector)):
+            scaled_x_vector.append((x_vector[i] - feature_min_max[i]['min'])/(feature_min_max[i]['max'] - feature_min_max[i]['min']))
+        scaled_x.append(scaled_x_vector)
+    return scaled_x
+
 x, y = [], []
 match_data = matches.get_parsed_data()
 for data in match_data[0:200]:
     x.append(data['x'])
     y.append(data['y'])
 
-features = {'x1': {'max': None, 'min': None}, 'x2': {'max': None, 'min':None}, 'x3': {'max': None, 'min': None}}
-for x_vector in x[0:180]:
-    if features['x1']['max'] == None or features['x1']['max'] < x_vector[1]:
-        features['x1']['max'] = x_vector[1]
-    if features['x2']['max'] == None or features['x2']['max'] < x_vector[2]:
-        features['x2']['max'] = x_vector[2]
-    if features['x3']['max'] == None or features['x3']['max'] < x_vector[3]:
-        features['x3']['max'] = x_vector[3]
-
-    if features['x1']['min'] == None or features['x1']['min'] > x_vector[1]:
-        features['x1']['min'] = x_vector[1]
-    if features['x2']['min'] == None or features['x2']['min'] > x_vector[2]:
-        features['x2']['min'] = x_vector[2]
-    if features['x3']['min'] == None or features['x3']['min'] > x_vector[3]:
-        features['x3']['min'] = x_vector[3]
-
-for x_vector in x:
-    x_vector[1] = (x_vector[1] - features['x1']['min'])/(features['x1']['max'] - features['x1']['min'])
-    x_vector[2] = (x_vector[2] - features['x2']['min'])/(features['x2']['max'] - features['x2']['min'])
-    x_vector[3] = (x_vector[3] - features['x3']['min'])/(features['x3']['max'] - features['x3']['min'])
+feature_min_max = find_min_max(x[0:180], 3)
+scaled_x = feature_scale(feature_min_max, x)
 
 # print gradient_descent(x, y)
-theta = [-10.924254587810285, 16.680540953194516, 12.86498581225716, -3.018842162598431]
-for i in range(180, 200):
-    prediction = floor(sigmoid(theta, x[i])*10000)/100.0
-    print "Prediction: %s%%, Actual value: %s" % (prediction, y[i])
+# theta = [-10.924254587810285, 16.680540953194516, 12.86498581225716, -3.018842162598431]
+# for i in range(150, 200):
+#      prediction = floor(sigmoid(theta, scaled_x[i])*10000)/100.0
+#      print "Prediction: %s%%, Actual value: %s" % (prediction, y[i])
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as pyplot
+
+xx, yy = meshgrid(range(20, 45), range(0, 6))
+normal = array([9.263*(10**-3), 2.658 , -3.784*(10**-1)])
+d = 9.294 * (10**-3)
+z = ((-1*d) - (normal[0]*xx) - (normal[1]*yy))/normal[2]
+# plt3d = pyplot.figure().gca(projection='3d')
+# plt3d.plot_surface(xx, yy, z)
+
+ax = pyplot.figure().add_subplot(111, projection='3d')
+ax.plot_surface(xx, yy, z, alpha=0.1)
+ax.set_xlabel('X Label')
+ax.set_ylabel('Y Label')
+ax.set_zlabel('Z Label')
+for i in range(0, len(x)):
+    if y[i] == 1:
+        ax.scatter(x[i][1], x[i][2], x[i][3], c = 'green')
+    else:
+        ax.scatter(x[i][1], x[i][2], x[i][3], c = 'red')
+
+pyplot.show()
